@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>复习框架结构</title>
+</head>
+<body>
+	<script>
+		(function(global) {
+			var init;
+			// 核心函数
+			var itcast = function(selector, context) {
+				return new itcast.fn.init(selector, context);
+			};
+			// 核心原型，存储操作dom元素的方法
+			itcast.fn = itcast.prototype = {
+				constructor: itcast
+			};
+			// 构造函数
+			init = itcast.fn.init = function (selector, context) {
+				
+			}
+			// 实现init对象 继承自 itcast.prototype
+			init.prototype = itcast.fn;
+			// 暴露给用户核心函数，用来查询dom元素
+			global.$ = global.itcast = itcast;
+		}(window));
+
+		itcast.prototype.addClass = function() {
+			console.log('addClass');
+		};
+
+		var i = new itcast('div');
+		var ii = itcast('div');
+		i.addClass();
+		console.log(i instanceof itcast);
+		console.log(i instanceof $.fn.init);
+	</script>
+</body>
+</html>
