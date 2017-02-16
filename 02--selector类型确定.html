@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>selector类型确定</title>
+	<script src="jquery.js"></script>
+
+</head>
+<body>
+	<div id="dv"></div>
+	<script>
+		// 1：string 
+		// 	选择器 
+		// 	html字符串
+		$('div');
+		$('<div>')
+		// 2: Dom对象
+		console.log($(document.getElementById('dv')));
+		// 3: Dom伪数组
+		console.log($(document.getElementsByTagName('div')));
+		// 4: 函数
+		$(function() {
+			// 入口函数
+		});
+		// 5：null undefined ''
+		console.log($(''));
+		console.log($(null));
+
+		var parseHTML = function(html) {
+			// 存储所有创建出来的元素节点
+			var ret = [];
+			// 动态创建一个div，使用其innerHML属性，来将html字符串转换成元素
+			var div = document.createElement('div');
+			div.innerHTML = html;
+			// 遍历div所有子节点
+			for(var i = 0, l = div.childNodes.length; i < l; i++){
+				// 如果类型为 元素节点，就是要创建的元素节点
+				// 就追加到ret内。
+				if(div.childNodes[i].nodeType === 1){
+					ret.push(div.childNodes[i]);
+				}
+			}
+			// 返回结果
+			return ret;
+		}
+
+		console.log(parseHTML('<div><p>123</p></div><p>456</p>'));
+	</script>
+</body>
+</html>
