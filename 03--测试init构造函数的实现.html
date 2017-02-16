@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>测试init构造函数的实现</title>
+</head>
+<body>
+	<div>213</div>
+	<p>456</p>
+	<script src="itcast.js"></script>
+	<script>
+		console.log($('<div><p>123</p></div><p>456</p>'));
+		console.log($('div,p'));
+		console.log($(document.querySelectorAll('div,p')));
+		window.setTimeout(function() {
+			$(function() {
+				console.log(2);
+			});
+		}, 3000);
+		$(function() {
+			console.log(1);
+		});
+	</script>
+</body>
+</html>

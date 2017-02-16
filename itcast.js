@@ -1,8 +1,10 @@
 (function(global) {
+	var document = global.document;
+
 	var init,
-		itcast = function(selector, context) {
-			return new itcast.fn.init(selector, context);
-		};
+			itcast = function(selector, context) {
+				return new itcast.fn.init(selector, context);
+			};
 
 	itcast.fn = itcast.prototype = {
 		constructor: itcast
@@ -26,6 +28,29 @@
 				Array.prototype.push.apply(this, select(selector, context));
 			}
 		}
+		// 处理Dom对象
+		else if(itcast.isDOM(selector)){
+			// Array.prototype.push.call(this, selector);
+			this[0] = selector;
+			this.length = 1;
+		}
+		// 处理DOM数组或者伪数组对象
+		else if(itcast.isArrayLike(selector)){
+			Array.prototype.push.apply(this, selector);
+		}
+		// 处理函数
+		else if(typeof selector === 'function'){
+			// 首先判断dom树是否加载完毕，
+			// 如果已加载完毕，就直接执行该函数
+			if(itcast.isReady){
+				selector();
+			} else { // 如果没有加载完毕，就将该函数注册到DOMContentLoaded这个事件上
+				document.addEventListener('DOMContentLoaded', function() {
+					itcast.isReady = true;
+					selector();
+				});
+			}
+		}
 	};
 
 	init.prototype = itcast.fn;
@@ -43,13 +68,38 @@
 		isString: function(obj) {
 			return typeof obj === 'string';
 		},
+		// 判断是否为html字符串
 		isHTML: function(obj) {
 			return (obj + '').charAt(0) === '<' && // 以 '<' 开头
 				(obj + '').charAt((obj + '').length - 1) === '>' && // 以 '>' 结尾
 				(obj + '').length >= 3; // 最小长度 为 3
+		},
+		// 判断是否为元素节点
+		isDOM: function(obj) {
+			return 'nodeType' in obj && obj.nodeType === 1;
+		},
+		// 判断是否为全局window对象
+		isWindow: function(obj) {
+			return !!obj && obj.window === obj;
+		},
+		// 判断是否为数组或伪数组对象
+		isArrayLike: function(obj) {
+			// 如果obj不为null或undefined，并且具有length属性，就获取其length值
+			// 否则 length为 bool值。
+			var length = !!obj && 'length' in obj && obj.length, 
+					type = itcast.type(obj); // 存储obj的类型
+
+			// 过滤函数和window对象
+			if(type === 'function' || itcast.isWindow(obj)){
+				return false;
+			}
+
+			return type === 'array' || length === 0 || 
+				typeof length === 'number' && length > 0 && (length - 1) in obj;
 		}
-	});
+	});	
 	itcast.extend({
+		isReady: false,
 		each: function(obj, callback) {
 			var i = 0,
 				l = obj.length;
@@ -77,6 +127,14 @@
 			}
 			// 返回结果
 			return ret;
+		},
+		type: function(obj) {
+			if(obj == null){
+				return obj + '';
+			}
+			return typeof obj === 'object' ? 
+				Object.prototype.toString.call(obj).slice(8, -1).toLowerCase() :
+				typeof obj;
 		}
 	});
 
@@ -125,4 +183,9 @@
 	};
 
 	global.$ = global.itcast = itcast;
+	// 注册DOM树加载完毕的时间
+	// 用来更新itcast.isReady值
+	document.addEventListener('DOMContentLoaded', function() {
+		itcast.isReady = true;
+	});
 }(window));
