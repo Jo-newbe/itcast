@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>get-eq-first-last方法</title>
+</head>
+<body>
+	<div>1div</div>
+	<div>2div</div>
+	<div>3div</div>
+	<script src="jquery.js"></script>
+	<!-- <script src="itcast.js"></script> -->
+	<script>
+		var $dom = $('div');
+		console.log($dom.get(0).innerHTML);
+		console.log($dom.get("1").innerHTML);
+		console.log($dom.get(-1).innerHTML);
+		console.log($dom.eq(-1)[0].innerHTML);
+		console.log($dom.first()[0].innerHTML);
+		console.log($dom.last()[0].innerHTML);
+	</script>
+</body>
+</html>

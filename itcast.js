@@ -1,5 +1,9 @@
 (function(global) {
-	var document = global.document;
+	var document = global.document,
+			arr = [],
+			slice = arr.slice,
+			push = arr.push;
+
 
 	var init,
 			itcast = function(selector, context) {
@@ -7,7 +11,28 @@
 			};
 
 	itcast.fn = itcast.prototype = {
-		constructor: itcast
+		constructor: itcast,
+		length: 0, // 保持itcast对象 在任何条件下都是 伪数组对象
+		toArray: function() {
+			return slice.call( this );
+		},
+		get: function(index) {
+			// 如果 index 为null 或undefined值，就将所有元素以数组形式返回。
+			if(index == null){
+				return slice.call(this);
+			}
+			// 根据索引值 获取对应的dom元素
+			return this[index >= 0 ? index - 0 : index - 0 + this.length];
+		},
+		eq: function(index) {
+			return itcast(this.get(index));
+		},
+		first: function() {
+			return itcast(this.get(0));
+		},
+		last: function() {
+			return itcast(this.get(-1));
+		}
 	};
 
 	init = itcast.fn.init = function(selector, context) {
@@ -22,10 +47,10 @@
 				// 创建dom
 				// var doms = itcast.parseHTML(selector);
 				// 以伪数组形成存储在this上
-				Array.prototype.push.apply(this, itcast.parseHTML(selector));
+				push.apply(this, itcast.parseHTML(selector));
 			} else { // 选择器
 				// var doms = select(selector, context);
-				Array.prototype.push.apply(this, select(selector, context));
+				push.apply(this, select(selector, context));
 			}
 		}
 		// 处理Dom对象
@@ -36,7 +61,7 @@
 		}
 		// 处理DOM数组或者伪数组对象
 		else if(itcast.isArrayLike(selector)){
-			Array.prototype.push.apply(this, selector);
+			push.apply(this, selector);
 		}
 		// 处理函数
 		else if(typeof selector === 'function'){
